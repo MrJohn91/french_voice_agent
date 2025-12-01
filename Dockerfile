@@ -17,7 +17,5 @@ COPY uv.lock ./
 RUN uv sync
 
 COPY agent.py ./
-COPY google_credential.json ./
-COPY .env ./
 
 CMD ["uv", "run", "agent.py", "start"]
