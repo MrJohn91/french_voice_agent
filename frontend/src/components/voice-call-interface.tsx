@@ -51,17 +51,17 @@ function VoiceCallControls({
 
     const checkUserSpeaking = () => {
       if (!room) return;
-      
+
       const localParticipant = room.localParticipant;
       const audioTracks = Array.from(localParticipant.audioTrackPublications.values());
       const isMuted = audioTracks.length > 0 && audioTracks[0]?.track?.isMuted;
-      const isSpeaking = localParticipant.isSpeaking && 
-                        localParticipant.isMicrophoneEnabled && 
-                        !isMuted;
-      
+      const isSpeaking = localParticipant.isSpeaking &&
+        localParticipant.isMicrophoneEnabled &&
+        !isMuted;
+
       const previousUserSpeaking = userSpeakingRef.current;
       userSpeakingRef.current = isSpeaking || false;
-      
+
       if (previousUserSpeaking !== userSpeakingRef.current || !agentSpeakingRef.current) {
         updateOrbState.current();
       }
@@ -71,10 +71,10 @@ function VoiceCallControls({
 
     const handleRemoteTrackSubscribed = (track: Track, publication: any, participant: RemoteParticipant) => {
       if (track.kind === "audio" && !participant.isLocal) {
-        const isAgent = participant.identity.toLowerCase().includes("agent") || 
-                       participant.name?.toLowerCase().includes("agent") ||
-                       participant.identity.toLowerCase().includes("alex");
-        
+        const isAgent = participant.identity.toLowerCase().includes("agent") ||
+          participant.name?.toLowerCase().includes("agent") ||
+          participant.identity.toLowerCase().includes("alex");
+
         if (isAgent && track.mediaStreamTrack) {
           if (!audioRef.current) {
             audioRef.current = new Audio();
@@ -83,20 +83,20 @@ function VoiceCallControls({
           } else {
             audioRef.current.srcObject = new MediaStream([track.mediaStreamTrack]);
           }
-          
+
           const checkAgentSpeaking = () => {
             if (audioRef.current) {
-              const isPlaying = !audioRef.current.paused && 
-                              audioRef.current.currentTime > 0 && 
-                              !audioRef.current.ended;
-              
+              const isPlaying = !audioRef.current.paused &&
+                audioRef.current.currentTime > 0 &&
+                !audioRef.current.ended;
+
               agentSpeakingRef.current = isPlaying;
             } else {
               agentSpeakingRef.current = false;
             }
             updateOrbState.current();
           };
-          
+
           const agentSpeakingInterval = setInterval(checkAgentSpeaking, 100);
           return () => clearInterval(agentSpeakingInterval);
         }
@@ -112,24 +112,24 @@ function VoiceCallControls({
 
     const handleActiveSpeakersChanged = (speakers: Participant[]) => {
       if (!room) return;
-      
+
       const remoteSpeakers = speakers.filter(p => !p.isLocal) as RemoteParticipant[];
       const agentIsSpeaking = remoteSpeakers.some(p => {
         const identity = (p.identity || "").toLowerCase();
         const name = (p.name || "").toLowerCase();
-        return identity.includes("agent") || 
-               name.includes("agent") ||
-               identity.includes("alex") ||
-               name.includes("alex");
+        return identity.includes("agent") ||
+          name.includes("agent") ||
+          identity.includes("alex") ||
+          name.includes("alex");
       });
-      
+
       const localParticipantIsSpeaking = room.localParticipant.isSpeaking;
       const userIsInSpeakers = speakers.some(p => p.isLocal);
       const userIsSpeaking = localParticipantIsSpeaking || userIsInSpeakers;
-      
+
       agentSpeakingRef.current = agentIsSpeaking;
       userSpeakingRef.current = userIsSpeaking && !agentIsSpeaking;
-      
+
       updateOrbState.current();
     };
 
@@ -156,13 +156,13 @@ function VoiceCallControls({
 
     await room.localParticipant.setMicrophoneEnabled(isMuted);
     setIsMuted(!isMuted);
-    
+
     if (isMuted) {
       userSpeakingRef.current = room.localParticipant.isMicrophoneEnabled;
     } else {
       userSpeakingRef.current = false;
     }
-    
+
     updateOrbState.current();
   };
 
@@ -180,7 +180,7 @@ function VoiceCallControls({
   return (
     <>
       <audio ref={audioRef} autoPlay playsInline style={{ display: "none" }} />
-      <div 
+      <div
         className="fixed bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-auto"
         style={{ zIndex: 99999 }}
       >
@@ -229,7 +229,7 @@ function RoomAccessor({
         roomSentRef.current = true;
         onRoomReady(room);
       }
-      
+
       if (room.state === ConnectionState.Connected) {
         onStateChange?.(null);
       }
@@ -288,7 +288,7 @@ export function VoiceCallInterface({
           adaptiveStream: true,
           dynacast: true,
         }}
-        className="fixed inset-0 z-50 bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 flex items-center justify-center"
+        className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
         onConnected={() => {
           setRoomState("connected");
         }}
@@ -302,7 +302,7 @@ export function VoiceCallInterface({
         <RoomAudioRenderer />
 
         {roomState === "connecting" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50 pointer-events-auto">
             <div className="text-center text-white">
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
               <p>Connexion à Alex...</p>
@@ -313,13 +313,13 @@ export function VoiceCallInterface({
 
       {roomState !== "disconnected" ? (
         room ? (
-          <VoiceCallControls 
+          <VoiceCallControls
             room={room}
-            onDisconnect={onDisconnect} 
-            onStateChange={onStateChange} 
+            onDisconnect={onDisconnect}
+            onStateChange={onStateChange}
           />
         ) : (
-          <div 
+          <div
             className="fixed bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-auto z-[99999]"
           >
             <div className="flex flex-col items-center gap-4 p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl">
