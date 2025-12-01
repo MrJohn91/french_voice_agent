@@ -1,4 +1,4 @@
-# French Voice Agent - Appointment Booking System
+n# French Voice Agent - Appointment Booking System
 
 A sophisticated French voice agent for automated appointment booking using LiveKit, Deepgram Nova-2, GPT-4o-mini, and ElevenLabs.
 
@@ -97,24 +97,29 @@ GOOGLE_CREDENTIALS_FILE=/path/to/service-account-credentials.json
 GOOGLE_CALENDAR_ID=primary  # or your specific calendar ID
 ```
 
-## 🚀 Usage
+## 🚀 Quick Start
 
-### Start the Voice Agent
+### 1. Install LiveKit CLI
 ```bash
-# Start LiveKit voice agent
-python agent/voice_agent.py
+brew install livekit-cli
 ```
 
-### Start the API Server (optional)
+### 2. Authenticate
 ```bash
-# Start FastAPI server for web integration
-python server/main.py
+lk cloud auth
 ```
 
-### Test the Agent
-1. Connect to your LiveKit room
-2. Speak in French: *"Bonjour, je voudrais prendre un rendez-vous"*
-3. Follow the conversation flow for appointment booking
+### 3. Deploy Agent
+```bash
+lk agent create
+```
+
+### 4. Test Locally
+```bash
+python agent/voice_agent.py dev
+```
+
+Then test at: https://agents-playground.livekit.io
 
 ## 📞 Sample Conversation Flow
 
@@ -200,40 +205,35 @@ The FastAPI server provides REST endpoints for web integration:
 
 ## 🛠️ Development
 
-### Phase 1: French POC (1-2 days)
-- [x] Basic French voice agent setup
-- [x] Deepgram Nova-2 integration
-- [x] GPT-4o-mini French prompts
-- [x] ElevenLabs French TTS
+### Local Testing
+```bash
+python agent/voice_agent.py dev
+# Or use: ./start.sh
+```
 
-### Phase 2: Appointment System (3-5 days)  
-- [x] Google Calendar integration
-- [x] Function tools for booking
-- [x] Email confirmations
-- [x] Availability checking
-
-### Phase 3: Latency Optimization (2-3 days)
-- [x] TTS streaming enabled
-- [x] Response caching framework
-- [x] Conversation state management
-- [x] Function calling optimization
+### Deploy to Cloud
+```bash
+lk agent create
+lk agent logs
+lk agent list
+```
 
 ## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **Calendar not working**: Check Google credentials and API permissions
-2. **Voice quality poor**: Verify ElevenLabs voice ID and model
-3. **High latency**: Check internet connection and API response times
-4. **French recognition issues**: Verify Deepgram language settings
+1. **Calendar not working**: Check `google_credential.json` path in `.env`
+2. **API errors**: Verify all API keys are valid
+3. **High latency**: Use `tts-1` instead of `tts-1-hd`
+4. **French recognition**: Deepgram Nova-2 optimized for French
 
 ### Logs
 ```bash
-# Check voice agent logs
+# Local
 tail -f logs/voice_agent.log
 
-# Check API server logs  
-tail -f logs/api_server.log
+# Cloud
+lk agent logs
 ```
 
 ## 📞 Support

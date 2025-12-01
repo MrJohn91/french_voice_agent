@@ -1,18 +1,23 @@
-FROM python:3.11-slim
+FROM ghcr.io/astral-sh/uv:python3.11-bookworm-slim
+
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    ffmpeg \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml ./
+COPY uv.lock ./
 
-# Copy requirements
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv sync
 
-# Copy application
-COPY . .
+COPY agent.py ./
+COPY google_credential.json ./
+COPY .env ./
 
-# Run the agent
-CMD ["python", "agent/voice_agent.py", "start"]
+CMD ["uv", "run", "agent.py", "start"]
