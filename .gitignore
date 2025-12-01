@@ -7,6 +7,9 @@
 google_credential.json
 *.json
 !.env.example
+!vercel.json
+!frontend/package*.json
+!frontend/tsconfig.json
 
 # Python
 __pycache__/
