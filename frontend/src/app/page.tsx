@@ -16,7 +16,11 @@ export default function Home() {
   const startCall = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/token?roomName=french-agent-room&participantName=User");
+      // Generate unique room name for this session
+      const roomName = `french-agent-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      const participantName = `User-${Math.random().toString(36).substring(7)}`;
+
+      const response = await fetch(`/api/token?roomName=${roomName}&participantName=${participantName}`);
       const data = await response.json();
 
       if (data.token && data.serverUrl) {
